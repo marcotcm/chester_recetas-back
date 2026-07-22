@@ -5,10 +5,11 @@ from typing import List
 from db.session import get_db
 from core.security import get_current_user
 from schemas.receta import RecetaCreate, RecetaUpdate, RecetaResponse, PayloadCrearReceta
+from schemas.ingrediente import IngredienteResponse, IngredienteUpdate, IngredienteBulkUpdate
 from models.user import Usuario
 from services import receta as services_receta
 
-router = APIRouter(prefix="/recetas", tags=["Recetas"])
+router = APIRouter()
 
 @router.post("/", response_model=RecetaResponse, status_code=status.HTTP_201_CREATED)
 async def publicar_receta(
@@ -100,3 +101,54 @@ async def eliminar_receta(
     * **Resultado:** Aplica Soft Delete marcando el campo de borrado lógico en el registro de la receta y lo propaga automáticamente hacia todos sus ingredientes.
     """
     return await services_receta.soft_delete_recipe(db, id, current_user)
+
+# =========================================================================
+# RUTAS NUEVAS PARA LA GESTIÓN DE INGREDIENTES
+# =========================================================================
+
+@router.get("/{id}/ingredientes", response_model=List[IngredienteResponse], status_code=status.HTTP_200_OK)
+async def obtener_ingredientes_de_receta(id: int, db: AsyncSession = Depends(get_db)):
+    """
+    * **Ruta:** GET /api/v1/recetas/{id}/ingredientes
+    * **Token:** No requiere
+    * **Nivel de permiso:** Público (Cualquier visitante)
+    * **Uso:** Pasa el ID de la receta en la URL para obtener de manera exclusiva sus componentes de cocina.
+    * **Resultado:** Devuelve un arreglo ordenado con todos los ingredientes activos adjuntos a dicha receta.
+    """
+    return await services_receta.get_ingredients_by_recipe_id(db=db, receta_id=id)
+
+@router.put("/{id}/ingredientes", response_model=List[IngredienteResponse], status_code=status.HTTP_200_OK)
+async def editar_ingredientes_de_receta_bulk(
+    id: int,
+    payload: IngredienteBulkUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    """
+    * **Ruta:** PUT /api/v1/recetas/{id}/ingredientes
+    * **Token:** Requiere (Bearer JWT)
+    * **Nivel de permiso:** Autor de la receta o Administrador
+    * **Uso:** Envía en el cuerpo JSON una lista con la nueva conformación de ingredientes. Si se omite un ingrediente viejo, este se elimina lógicamente.
+    * **Resultado:** Reemplaza o actualiza en bloque los ingredientes de la receta indicada y devuelve la lista fresca resultante.
+    """
+    return await services_receta.update_recipe_ingredients_bulk(
+        db=db, receta_id=id, bulk_in=payload, current_user=current_user
+    )
+
+@router.patch("/ingredientes/{ingrediente_id}", response_model=IngredienteResponse, status_code=status.HTTP_200_OK)
+async def editar_ingrediente_por_id(
+    ingrediente_id: int,
+    payload: IngredienteUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    """
+    * **Ruta:** PATCH /api/v1/recetas/ingredientes/{ingrediente_id}
+    * **Token:** Requiere (Bearer JWT)
+    * **Nivel de permiso:** Autor de la receta dueña o Administrador
+    * **Uso:** Envía los campos específicos (cantidad, unidad, ingrediente) que se desean corregir de un componente individual por su clave primaria.
+    * **Resultado:** Retorna el objeto del ingrediente actualizado y persiste los cambios.
+    """
+    return await services_receta.update_single_ingredient(
+        db=db, ingrediente_id=ingrediente_id, ing_in=payload, current_user=current_user
+    )

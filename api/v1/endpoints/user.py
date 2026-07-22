@@ -19,7 +19,7 @@ from models.user import Usuario
 from services import user as services_usuario
 from db.supabaseR import get_supabase_admin
 
-router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+router = APIRouter()
 
 @router.post("/registro", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 async def registrar_usuario(

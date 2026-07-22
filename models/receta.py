@@ -14,7 +14,7 @@ class Receta(Base):
     descripcion = Column(String, nullable=False)
     info_nutri = Column(JSON, nullable=True)
     instrucciones = Column(JSON, nullable=True)
-    consejos = Column(JSON, nullable=False)  # Cambiado a JSON según tu nuevo DDL
+    consejos = Column(JSON, nullable=False)  
     
     id_user = Column(BigInteger, ForeignKey("public.usuarios.id"), nullable=True)
     id_categoria = Column(BigInteger, ForeignKey("public.categorias.id"), nullable=True)

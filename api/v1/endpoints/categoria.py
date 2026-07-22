@@ -8,7 +8,7 @@ from schemas.categoria import CategoriaCreate, CategoriaResponse
 from models.user import Usuario, UserRole
 from services import categoria as services_categoria
 
-router = APIRouter(prefix="/categorias", tags=["Categorías"])
+router = APIRouter()
 
 @router.get("/", response_model=List[CategoriaResponse])
 async def listar_todas_las_categorias(db: AsyncSession = Depends(get_db)):

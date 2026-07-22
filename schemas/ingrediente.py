@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 class IngredienteBase(BaseModel):
@@ -23,3 +23,18 @@ class IngredienteResponse(IngredienteBase):
 
     class Config:
         from_attributes = True
+
+# ==========================================
+# Esquemas Nuevos para Edición en Lote
+# ==========================================
+
+class IngredienteBulkItem(BaseModel):
+    """Estructura de un ingrediente individual para actualización masiva."""
+    id: Optional[int] = None  # Si viene con ID, se edita. Si no, se crea uno nuevo.
+    ingrediente: str
+    cantidad: int
+    unidad: str
+
+class IngredienteBulkUpdate(BaseModel):
+    """Contenedor de lista para reemplazar o actualizar los ingredientes de una receta."""
+    ingredientes: List[IngredienteBulkItem]
