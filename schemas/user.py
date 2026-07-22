@@ -4,6 +4,10 @@ from datetime import datetime
 import uuid
 from models.user import UserRole
 
+# ==========================================
+# Esquemas Base y Perfil de Usuario
+# ==========================================
+
 class UsuarioBase(BaseModel):
     nombre: Optional[str] = ""
     email: Optional[EmailStr] = ""
@@ -22,7 +26,6 @@ class UsuarioUpdate(BaseModel):
     ubicacion: Optional[str] = None
     foto_perfil: Optional[str] = None
     role: Optional[UserRole] = None
-    # id_supabase normalmente no cambia tras el registro, pero lo dejamos por consistencia
     id_supabase: Optional[uuid.UUID] = None 
 
 class UsuarioResponse(UsuarioBase):
@@ -33,3 +36,27 @@ class UsuarioResponse(UsuarioBase):
 
     class Config:
         from_attributes = True
+
+# ==========================================
+# Esquemas Nuevos para Autenticación y Flujos
+# ==========================================
+
+class UserLogin(BaseModel):
+    """Esquema para recibir las credenciales de inicio de sesión."""
+    email: EmailStr
+    password: str
+
+class TokenRefreshRequest(BaseModel):
+    """Esquema para solicitar un nuevo access token usando el refresh token."""
+    refresh_token: str
+
+class TokenResponse(BaseModel):
+    """Esquema de respuesta estándar para tokens junto con el perfil local."""
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    user: UsuarioResponse
+
+class ForgotPasswordRequest(BaseModel):
+    """Esquema para solicitar el enlace de restauración al correo electrónico."""
+    email: EmailStr
