@@ -11,6 +11,7 @@ class RecetaBase(BaseModel):
     consejos: Any  # Modificado a Any para coincidir con el tipo JSON de tu DDL
     id_user: Optional[int] = None
     id_categoria: Optional[int] = None
+    foto: Optional[str] = None
 
 class RecetaCreate(RecetaBase):
     pass
@@ -22,6 +23,7 @@ class RecetaUpdate(BaseModel):
     instrucciones: Optional[Any] = None
     consejos: Optional[Any] = None
     id_categoria: Optional[int] = None
+    foto: Optional[str] = None
 
 class RecetaResponse(BaseModel):
     id: int
@@ -34,6 +36,7 @@ class RecetaResponse(BaseModel):
     id_categoria: Optional[int] = None
     created_at: datetime
     is_deleted: Optional[datetime] = None
+    foto: Optional[str] = None
     ingredientes: List[IngredienteResponse] = [] 
 
     class Config:
