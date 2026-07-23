@@ -69,7 +69,8 @@ class PayloadCrearReceta(BaseModel):
                         "tip_cocina": "Puedes sustituir la crema de leche por leche de coco para una versión más ligera.",
                         "conservacion": "Se mantiene en la nevera hasta por 3 días en envase hermético."
                     },
-                    "id_categoria": 1
+                    "id_categoria": 1,
+                    "foto": "url/foto" 
                 },
                 "ingredientes": [
                     {
