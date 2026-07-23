@@ -19,6 +19,7 @@ class Receta(Base):
     id_user = Column(BigInteger, ForeignKey("public.usuarios.id"), nullable=True)
     id_categoria = Column(BigInteger, ForeignKey("public.categorias.id"), nullable=True)
     is_deleted = Column(DateTime, nullable=True)
+    foto= Column(String, nullable=True)
 
     # Relaciones
     usuario = relationship("Usuario", back_populates="recetas", lazy="selectin")
